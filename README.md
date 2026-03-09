@@ -1,109 +1,182 @@
-# Backend - Satyamev Vijayate
+# Interactive Demo Tutorial - Satyamev AI Misinformation Verifier
 
-Python backend for fake news verification using FastAPI.
+A standalone WhatsApp-style chat demo application for the Satyamev hackathon project (AI for Bharat Hackathon). This application provides judges and users with an interactive chat interface to test AI-powered misinformation verification capabilities for both text claims and images.
 
-## Structure
+## Features
 
-- `src/api_gateway.py` - FastAPI application and endpoints
-- `src/verification_engine.py` - Orchestrates multi-modal analysis
-- `src/analyzers/` - Specialized analyzers for each content type
-  - `text_analyzer.py` - Text content analysis
-  - `image_analyzer.py` - Image content analysis
-  - `video_analyzer.py` - Video content analysis
-- `src/models.py` - Pydantic data models
+- 🎨 WhatsApp-style chat interface
+- 📝 Text claim verification
+- 🖼️ Image upload and verification with OCR
+- ⚡ Quick demo buttons for instant testing
+- 🔄 Fallback mode with mock data for offline demonstrations
+- 📱 Mobile-responsive design
+- ✨ Smooth animations and transitions
+- 🧪 Comprehensive testing with Vitest and fast-check
 
-## Setup
+## Technology Stack
 
-### Create Virtual Environment
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite 5.x
+- **Styling**: TailwindCSS 3.x
+- **HTTP Client**: Axios
+- **Testing**: Vitest + React Testing Library + fast-check
+- **Deployment**: AWS S3 + CloudFront or Vercel
+
+## Prerequisites
+
+- Node.js 18+ and npm
+- Modern web browser (Chrome 90+, Safari 14+, Firefox 88+)
+
+## Installation
+
+1. Clone the repository and navigate to the project directory:
 ```bash
-python -m venv venv
+cd frontend-demo
 ```
 
-### Activate Virtual Environment
-- Windows: `venv\Scripts\activate`
-- Linux/Mac: `source venv/bin/activate`
-
-### Install Dependencies
+2. Install dependencies:
 ```bash
-pip install -r requirements.txt
-pip install -e .
+npm install
 ```
+
+3. Configure environment variables:
+   - Copy `.env.development` for local development
+   - Update `.env.production` with your API Gateway URL for production
 
 ## Development
 
-### Run Development Server
+Start the development server:
 ```bash
-uvicorn src.api_gateway:app --reload
+npm run dev
 ```
 
-The API will be available at `http://localhost:8000`
+The application will open at `http://localhost:5173` with hot module replacement enabled.
 
-### API Documentation
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+## Available Scripts
+
+- `npm run dev` - Start development server on port 5173
+- `npm run build` - Build for production (TypeScript compilation + Vite build)
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+- `npm run test` - Run tests once
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run type-check` - Run TypeScript type checking
 
 ## Testing
 
-### Run All Tests
+The project uses a dual testing approach:
+
+### Unit Tests
 ```bash
-pytest
+npm run test
 ```
 
-### Run with Coverage
+### Property-Based Tests
+Property tests use fast-check to verify universal correctness properties across randomized inputs (minimum 100 iterations per test).
+
+### Coverage Report
 ```bash
-pytest --cov=src --cov-report=html
+npm run test:coverage
 ```
 
-### Run Specific Test File
+Coverage targets:
+- Overall: 80%
+- Components: 85%
+- Services: 90%
+
+## Project Structure
+
+```
+frontend-demo/
+├── src/
+│   ├── components/       # React components
+│   ├── services/         # API and fallback services
+│   ├── types/           # TypeScript type definitions
+│   ├── test/            # Test setup and utilities
+│   ├── App.tsx          # Main application component
+│   ├── main.tsx         # Application entry point
+│   └── index.css        # Global styles with Tailwind
+├── public/              # Static assets
+├── .env.development     # Development environment variables
+├── .env.production      # Production environment variables
+├── vite.config.ts       # Vite configuration
+├── vitest.config.ts     # Vitest configuration
+├── tailwind.config.js   # TailwindCSS configuration
+├── tsconfig.json        # TypeScript configuration
+└── package.json         # Project dependencies
+```
+
+## Environment Variables
+
+### Development (.env.development)
+```
+VITE_API_BASE_URL=http://localhost:3000
+VITE_ENABLE_FALLBACK=true
+VITE_API_TIMEOUT=5000
+```
+
+### Production (.env.production)
+```
+VITE_API_BASE_URL=https://your-api-gateway-url.amazonaws.com/prod
+VITE_ENABLE_FALLBACK=true
+VITE_API_TIMEOUT=5000
+```
+
+## Building for Production
+
+1. Update `.env.production` with your API Gateway URL
+2. Build the application:
 ```bash
-pytest tests/test_verification_engine.py
+npm run build
 ```
 
-## Testing Framework
+The optimized production build will be in the `dist/` directory.
 
-- **pytest**: Testing framework
-- **hypothesis**: Property-based testing library
-- **pytest-asyncio**: Async testing support
-- **pytest-mock**: Mocking utilities
+## Deployment
 
-## Coverage Goals
+### AWS S3 + CloudFront
 
-- Minimum 90% code coverage
-- 100% coverage of classification rules
-- All error paths must have explicit tests
+See deployment documentation in the project wiki for detailed instructions on:
+- S3 bucket configuration
+- CloudFront distribution setup
+- CORS configuration
 
-## API Endpoints
+### Vercel
 
-### POST /api/v1/verify
-Verify content for fake news
+1. Install Vercel CLI: `npm i -g vercel`
+2. Login: `vercel login`
+3. Deploy: `vercel --prod`
 
-**Request:**
-```json
-{
-  "content_type": "text",
-  "content_data": "Content to verify",
-  "language": "en",
-  "user_id": "user123"
-}
-```
+## API Integration
 
-**Response:**
-```json
-{
-  "id": "uuid",
-  "timestamp": 1234567890,
-  "content_type": "text",
-  "credibility_score": 75.5,
-  "classification": "Verified",
-  "confidence": 0.85,
-  "explanation": "Analysis explanation",
-  "sources": [],
-  "analysis_details": {}
-}
-```
+The application integrates with existing backend APIs:
+- `POST /v1/verify` - Text claim verification
+- `POST /v1/verify-image` - Image verification with OCR
 
-### POST /api/v1/report
-Report incorrect verification results
+### Fallback Mode
 
-### GET /api/v1/health
-Health check endpoint
+When the API is unavailable, the application automatically switches to fallback mode with mock data, allowing demonstrations to continue offline.
+
+## Performance
+
+- Initial render: <1 second
+- Bundle size: <500KB
+- End-to-end verification: <5 seconds
+- UI interactions: <100ms response time
+
+## Browser Support
+
+- Chrome 90+
+- Safari 14+
+- Firefox 88+
+- iOS Safari 14+
+- Android Chrome 90+
+
+## Contributing
+
+This is a hackathon demo project. For questions or issues, please contact the development team.
+
+## License
+
+Private - AI for Bharat Hackathon Project
